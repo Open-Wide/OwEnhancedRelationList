@@ -436,7 +436,7 @@
     {literal}
     $(document).ready(function() {
         var limit = {/literal}{$attribute.class_content.limit}{literal};
-        alert(limit);
+        
         if (limit > 0) {
             var attribute_id = '{/literal}{$attribute.id}{literal}';
             if ($('#ezobjectrelationlist_browse_' + attribute_id).find('table tbody tr:visible').length == limit) {
