@@ -28,44 +28,87 @@
 class OWEnhancedRelationListType extends eZObjectRelationListType {
 
     const DATA_TYPE_STRING = 'owenhancedrelationlist';
-    //const CLASS_STORAGE_XML = 'data_text5';
 
-    protected $defaultLimit = 0; // Max items to be selected
+    protected $defaultMinElements = 0; // Min items to be selected
+    protected $defaultMaxElements = 0; // Max items to be selected
 
     function __construct() {
         parent::eZDataType( self::DATA_TYPE_STRING, ezpI18n::tr( 'kernel/classes/datatypes', "Enhanced relation list (OW)", 'Datatype name' ),
           array( 'serialize_supported' => true ) );
     }
 
-    /*     * ******
-     * CLASS *
-     * ****** */
+    /*
+     * OBJECT
+     */
+    function validateObjectAttributeHTTPInput( $http, $base, $contentObjectAttribute )
+    {
+
+        $status = parent::validateObjectAttributeHTTPInput($http, $base, $contentObjectAttribute);
+
+        if ($status == eZInputValidator::STATE_INVALID) {
+            return $status;
+        }
+
+        if ($http->hasPostVariable('PublishButton') || $http->hasPostVariable('StoreExitButton')) {
+
+            $contentClassAttribute = $contentObjectAttribute->contentClassAttribute();
+            $classContent = $contentClassAttribute->content();
+            $content = $contentObjectAttribute->content();
+            $countRelationList = count($content['relation_list']);
+
+            if ($classContent['min_elements'] > 0) {
+
+                // Enough elements ?
+                if ($countRelationList < $classContent['min_elements']) {
+                    $contentObjectAttribute->setValidationError(
+                      ezpI18n::tr(
+                        'kernel/classes/datatypes',
+                        'Must have more than %XXX% objects',
+                        null,
+                        array(
+                          '%XXX%' => $classContent['min_elements'],
+                        )
+                      )
+                    );
+                    return eZInputValidator::STATE_INVALID;
+                }
+            }
+            if ($classContent['max_elements'] > 0) {
+                // Too much elements ?
+                if ($countRelationList > $classContent['max_elements']) {
+                    $contentObjectAttribute->setValidationError(
+                      ezpI18n::tr(
+                        'kernel/classes/datatypes',
+                        'Must have less than %XXX% objects',
+                        null,
+                        array(
+                          '%XXX%' => $classContent['max_elements'],
+                        )
+                      )
+                    );
+                    return eZInputValidator::STATE_INVALID;
+                }
+            }
+        }
+        return $status;
+    }
+
+    /*
+     * CLASS
+     */
 
     static function contentObjectArrayXMLMap() {
         $array = parent::contentObjectArrayXMLMap();
         return array_merge($array, array(
-            'limit' => 'limit',
+            'min_elements' => 'min_elements',
+            'max_elements' => 'max_elements',
         ));
     }
 
-    function objectAttributeContent( $contentObjectAttribute )
-    {
-        $xmlText = $contentObjectAttribute->attribute( 'data_text' );
-        if ( trim( $xmlText ) == '' )
-        {
-            $objectAttributeContent = $this->defaultObjectAttributeContent();
-            return $objectAttributeContent;
-        }
-        $doc = $this->parseXML( $xmlText );
-        $content = $this->createObjectContentStructure( $doc );
-
-        return $content;
-    }
-
-    function appendObject( $objectID, $priority, $contentObjectAttribute, $limit = '0' ) {
+    function appendObject( $objectID, $priority, $contentObjectAttribute, $min_elements = 0, $max_elements = 0 ) {
         $relationItem = parent::appendObject($objectID, $priority, $contentObjectAttribute);
-        $relationItem['limit'] = intval($limit);
-
+        $relationItem['min_elements'] = intval($min_elements);
+        $relationItem['max_elements'] = intval($max_elements);
         return $relationItem;
     }
 
@@ -75,11 +118,17 @@ class OWEnhancedRelationListType extends eZObjectRelationListType {
 
         $content = $classAttribute->content();
 
-        $limitVariable = 'ContentClass_ezobjectrelationlist_limit_' . $classAttribute->attribute( 'id' );
-        if ( $http->hasPostVariable( $limitVariable ) )
+        $minElementsVariable = 'ContentClass_ezobjectrelationlist_min_elements_' . $classAttribute->attribute( 'id' );
+        if ( $http->hasPostVariable( $minElementsVariable ) )
         {
-            $limit = $http->postVariable( $limitVariable );
-            $content['limit'] = intval($limit);
+            $min_elements = $http->postVariable( $minElementsVariable );
+            $content['min_elements'] = intval($min_elements);
+        }
+        $maxElementsVariable = 'ContentClass_ezobjectrelationlist_max_elements_' . $classAttribute->attribute( 'id' );
+        if ( $http->hasPostVariable( $maxElementsVariable ) )
+        {
+            $max_elements = $http->postVariable( $maxElementsVariable );
+            $content['max_elements'] = intval($max_elements);
         }
 
         $classAttribute->setContent( $content );
@@ -103,9 +152,15 @@ class OWEnhancedRelationListType extends eZObjectRelationListType {
         $constraintType = $doc->createElement( 'type' );
         $constraintType->setAttribute( 'value', $content['type'] );
         $root->appendChild( $constraintType );
-        $limit = $doc->createElement( 'limit' );
-        $limit->setAttribute( 'value', $content['limit'] );
-        $root->appendChild( $limit );
+
+        $min_elements = $doc->createElement( 'min_elements' );
+        $min_elements->setAttribute( 'value', $content['min_elements'] );
+        $root->appendChild( $min_elements );
+
+        $max_elements = $doc->createElement( 'max_elements' );
+        $max_elements->setAttribute( 'value', $content['max_elements'] );
+        $root->appendChild( $max_elements );
+
         $selectionType = $doc->createElement( 'selection_type' );
         $selectionType->setAttribute( 'value', $content['selection_type'] );
         $root->appendChild( $selectionType );
@@ -125,12 +180,15 @@ class OWEnhancedRelationListType extends eZObjectRelationListType {
 
     function defaultClassAttributeContent()
     {
-        return array( 'object_class' => '',
-          'selection_type' => 0,
-          'type' => 0,
-          'limit' => $this->defaultLimit,
-          'class_constraint_list' => array(),
-          'default_placement' => false );
+        return array(
+            'object_class' => '',
+            'selection_type' => 0,
+            'type' => 0,
+            'min_elements' => $this->defaultMinElements,
+            'max_elements' => $this->defaultMaxElements,
+            'class_constraint_list' => array(),
+            'default_placement' => false,
+        );
     }
 
     function createClassContentStructure( $doc )
@@ -138,11 +196,14 @@ class OWEnhancedRelationListType extends eZObjectRelationListType {
         $content = parent::createClassContentStructure($doc);
         $root = $doc->documentElement;
 
-        $limit = $root->getElementsByTagName( 'limit' )->item( 0 );
-        if ( $limit ) {
-            $content['limit'] = $limit->getAttribute( 'value' );
+        $min_elements = $root->getElementsByTagName( 'min_elements' )->item( 0 );
+        if ( $min_elements ) {
+            $content['min_elements'] = $min_elements->getAttribute( 'value' );
         }
-
+        $max_elements = $root->getElementsByTagName( 'max_elements' )->item( 0 );
+        if ( $max_elements ) {
+            $content['max_elements'] = $max_elements->getAttribute( 'value' );
+        }
         return $content;
     }
 
@@ -153,10 +214,15 @@ class OWEnhancedRelationListType extends eZObjectRelationListType {
         $dom = $attributeParametersNode->ownerDocument;
         $content = $classAttribute->content();
 
-        $limit = is_numeric( $content['limit'] ) ? $content['limit'] : $this->defaultLimit;
-        $limitNode = $dom->createElement( 'limit' );
-        $limitNode->appendChild( $dom->createTextNode( $limit ) );
-        $attributeParametersNode->appendChild( $limitNode );
+        $min_elements = is_numeric( $content['min_elements'] ) ? $content['min_elements'] : $this->defaultMinElements;
+        $min_elementsNode = $dom->createElement( 'min_elements' );
+        $min_elementsNode->appendChild( $dom->createTextNode( $min_elements ) );
+        $attributeParametersNode->appendChild( $min_elementsNode );
+
+        $max_elements = is_numeric( $content['max_elements'] ) ? $content['max_elements'] : $this->defaultMaxElements;
+        $max_elementsNode = $dom->createElement( 'max_elements' );
+        $max_elementsNode->appendChild( $dom->createTextNode( $max_elements ) );
+        $attributeParametersNode->appendChild( $max_elementsNode );
     }
 
     function unserializeContentClassAttribute( $classAttribute, $attributeNode, $attributeParametersNode )
@@ -164,7 +230,8 @@ class OWEnhancedRelationListType extends eZObjectRelationListType {
         parent:unserializeContentClassAttribute( $classAttribute, $attributeNode, $attributeParametersNode );
 
         $content = $classAttribute->content();
-        $content['limit'] = $attributeParametersNode->getElementsByTagName( 'limit' )->item( 0 )->textContent;
+        $content['min_elements'] = $attributeParametersNode->getElementsByTagName( 'min_elements' )->item( 0 )->textContent;
+        $content['max_elements'] = $attributeParametersNode->getElementsByTagName( 'max_elements' )->item( 0 )->textContent;
         $classAttribute->setContent( $content );
         $this->storeClassAttributeContent( $classAttribute, $content );
     }

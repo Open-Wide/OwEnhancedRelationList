@@ -435,11 +435,11 @@
 <script type="text/javascript">
     {literal}
     $(document).ready(function() {
-        var limit = {/literal}{$attribute.class_content.limit}{literal};
+        var max_elements = {/literal}{$attribute.class_content.max_elements}{literal};
         
-        if (limit > 0) {
+        if (max_elements > 0) {
             var attribute_id = '{/literal}{$attribute.id}{literal}';
-            if ($('#ezobjectrelationlist_browse_' + attribute_id).find('table tbody tr:visible').length == limit) {
+            if ($('#ezobjectrelationlist_browse_' + attribute_id).find('table tbody tr:visible').length == max_elements) {
                 $('#add_elements_relation_' + attribute_id).hide();
             }
         }

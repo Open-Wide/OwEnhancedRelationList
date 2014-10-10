@@ -3,7 +3,8 @@
      class_list=$content.class_constraint_list
      default_placement=$content.default_placement
      type=$content.type
-     limit=$content.limit
+     min_elements=$content.min_elements
+     max_elements=$content.max_elements
      all_class_list=fetch( class, list, hash( 'sort_by', array( 'name', true() ) ) )}
 
 <div class="block">
@@ -20,8 +21,14 @@
 </div>
 
 <div class="block" title="{'0: no limit'|i18n( 'design/standard/class/datatype' )}">
-    <label>{'Limit'|i18n( 'design/standard/class/datatype' )}:
-    <input type="text" name="ContentClass_ezobjectrelationlist_limit_{$class_attribute.id}" value="{cond($limit, $limit, 0)}" maxlength="3" />
+    <label>{'Min elements'|i18n( 'design/standard/class/datatype' )}:
+    <input type="text" name="ContentClass_ezobjectrelationlist_min_elements_{$class_attribute.id}" value="{cond($min_elements, $min_elements, 0)}" maxlength="3" size="3" />
+    </label>
+</div>
+
+<div class="block" title="{'0: no limit'|i18n( 'design/standard/class/datatype' )}">
+    <label>{'Max elements'|i18n( 'design/standard/class/datatype' )}:
+        <input type="text" name="ContentClass_ezobjectrelationlist_max_elements_{$class_attribute.id}" value="{cond($max_elements, $max_elements, 0)}" maxlength="3" size="3" />
     </label>
 </div>
 

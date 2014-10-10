@@ -9,8 +9,23 @@
 			<translation>Relation d'objets améliorée (OW)</translation>
 		</message>
         <message>
-            <source>Limit</source>
-            <translation>Limite</translation>
+            <source>Must have more than %XXX% objects</source>
+            <translation>Doit contenir plus de %XXX% objets</translation>
+        </message>
+        <message>
+            <source>Must have less than %XXX% objects</source>
+            <translation>Doit contenir moins de %XXX% objets</translation>
+        </message>
+    </context>
+    <context>
+        <name>design/standard/class/datatype</name>
+        <message>
+            <source>Min elements</source>
+            <translation>Nombre minimum d'objets</translation>
+        </message>
+        <message>
+            <source>Max elements</source>
+            <translation>Nombre maximum d'objets</translation>
         </message>
         <message>
             <source>0: no limit</source>
