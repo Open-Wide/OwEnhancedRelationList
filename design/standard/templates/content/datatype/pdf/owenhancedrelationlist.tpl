@@ -1,0 +1,1 @@
+{include uri="design:content/datatype/pdf/ezobjectrelationlist.tpl"}
