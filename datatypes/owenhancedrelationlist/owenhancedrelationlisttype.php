@@ -55,9 +55,7 @@ class OWEnhancedRelationListType extends eZObjectRelationListType {
             $classContent = $contentClassAttribute->content();
             $content = $contentObjectAttribute->content();
             $countRelationList = count($content['relation_list']);
-
-            if ($classContent['min_elements'] > 0) {
-
+            if ( $countRelationList > 0 && $classContent['min_elements'] > 0) {
                 // Enough elements ?
                 if ($countRelationList < $classContent['min_elements']) {
                     $contentObjectAttribute->setValidationError(
