@@ -32,4 +32,35 @@
             <translation>0: pas de limite</translation>
         </message>
 	</context>
+    <context>
+        <name>design/standard/content/datatype</name>
+        <message>
+            <source>Can contain between %minItem% and %maxItem% item</source>
+            <translation>Peut contenir entre %minItem% et %maxItem% élément</translation>
+        </message>
+        <message>
+            <source>Can contain between %minItem% and %maxItem% items</source>
+            <translation>Peut contenir entre %minItem% et %maxItem% éléments</translation>
+        </message>
+        <message>
+            <source>Can contain %minItem% item</source>
+            <translation>Peut contenir %minItem% élément</translation>
+        </message>
+        <message>
+            <source>Can contain %minItem% items</source>
+            <translation>Peut contenir %minItem% éléments</translation>
+        </message>
+        <message>
+            <source>Must contain between %minItem% and %maxItem% items</source>
+            <translation>Doit contenir entre %minItem% et %maxItem% éléments</translation>
+        </message>
+        <message>
+            <source>Must contain %minItem% item</source>
+            <translation>Doit contenir %minItem% élément</translation>
+        </message>
+        <message>
+            <source>Must contain %minItem% items</source>
+            <translation>Doit contenir %minItem% éléments</translation>
+        </message>
+    </context>
 </TS>

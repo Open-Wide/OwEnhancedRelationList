@@ -200,6 +200,7 @@
         {/let}
         {/default}
 {else}    {* Standard mode is browsing *}
+
     <div class="block" id="ezobjectrelationlist_browse_{$attribute.id}">
     {if is_set( $attribute.class_content.default_placement.node_id )}
          {set browse_object_start_node = $attribute.class_content.default_placement.node_id}
@@ -210,7 +211,6 @@
 
     {* Advanced interface. *}
     {if eq( ezini( 'BackwardCompatibilitySettings', 'AdvancedObjectRelationList' ), 'enabled' )}
-
             {if $attribute.content.relation_list}
                 <table class="list" cellspacing="0">
                 <tr class="bglight">
@@ -334,8 +334,28 @@
 
     {* Simple interface. *}
     {else}
+      {let
+        $minElements = $attribute.class_content.min_elements|value
+        $maxElements = $attribute.class_content.max_elements|value
+        $relationTextAction = 'Can'
+        $relationTextItem = 'item'
+        $relationTextNb = "%minItem%"
+      }
+
+      {if $minElements|gt(0)}
+        {set $relationTextAction = 'Must'}
+      {/if}
+      {if $maxElements|gt(1)}
+        {set $relationTextItem = 'items'}
+      {/if}
+      {if not($minElements|eq($maxElements))}
+        {set $relationTextNb = "between %minItem% and %maxItem%"}
+      {/if}
+
+      {let $relationTextTrad = concat($relationTextAction, " contain ",  $relationTextNb, " ", $relationTextItem)}
 
         <h4>{'Objects in the relation'|i18n( 'design/standard/content/datatype' )}</h4>
+        <h5>{$relationTextTrad|i18n( 'design/standard/content/datatype',, hash('%minItem%',$minElements,'%maxItem%',$maxElements) )}</h5>
         <table class="list{if $attribute.content.relation_list|not} hide{/if}" cellspacing="0">
         <thead>
         <tr>
