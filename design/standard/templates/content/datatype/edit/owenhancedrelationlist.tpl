@@ -423,30 +423,28 @@
 	            <input class="button-disabled ezobject-relation-remove-button" type="submit" name="CustomActionButton[{$attribute.id}_remove_objects]" value="{'Remove selected'|i18n( 'design/standard/content/datatype' )}" disabled="disabled" />
 	        {/if}
         </div>
-        <div id="add_elements_relation_{$attribute.id}">
-            <h4>{'Add objects in the relation'|i18n( 'design/standard/content/datatype' )}</h4>
-            <div class="left">
-                {if $browse_object_start_node}
-                    <input type="hidden" name="{$attribute_base}_browse_for_object_start_node[{$attribute.id}]" value="{$browse_object_start_node|wash}" />
-                {/if}
+        <h4>{'Add objects in the relation'|i18n( 'design/standard/content/datatype' )}</h4>
+        <div class="left">
+            {if $browse_object_start_node}
+                <input type="hidden" name="{$attribute_base}_browse_for_object_start_node[{$attribute.id}]" value="{$browse_object_start_node|wash}" />
+            {/if}
 
-                {if is_set( $attribute.class_content.class_constraint_list[0] )}
-                    <input type="hidden" name="{$attribute_base}_browse_for_object_class_constraint_list[{$attribute.id}]" value="{$attribute.class_content.class_constraint_list|implode(',')}" />
-                {/if}
+            {if is_set( $attribute.class_content.class_constraint_list[0] )}
+                <input type="hidden" name="{$attribute_base}_browse_for_object_class_constraint_list[{$attribute.id}]" value="{$attribute.class_content.class_constraint_list|implode(',')}" />
+            {/if}
 
-                <input class="button" type="submit" name="CustomActionButton[{$attribute.id}_browse_objects]" value="{'Add existing objects'|i18n( 'design/standard/content/datatype' )}" title="{'Browse to add existing objects in this relation'|i18n( 'design/standard/content/datatype' )}" />
-                {include uri='design:content/datatype/edit/ezobjectrelationlist_ajaxuploader.tpl'}
+            <input class="button" type="submit" name="CustomActionButton[{$attribute.id}_browse_objects]" value="{'Add existing objects'|i18n( 'design/standard/content/datatype' )}" title="{'Browse to add existing objects in this relation'|i18n( 'design/standard/content/datatype' )}" />
+            {include uri='design:content/datatype/edit/owenhancedrelationlist_ajaxuploader.tpl'}
 
-            </div>
-            <div class="right">
-                <input type="text" class="halfbox hide ezobject-relation-search-text" />
-                <input type="submit" class="button hide ezobject-relation-search-btn" name="CustomActionButton[{$attribute.id}_browse_objects]" value="{'Find objects'|i18n( 'design/standard/content/datatype' )}" />
-            </div>
+        </div>
+        <div class="right">
+            <input type="text" class="halfbox hide ezobject-relation-search-text" />
+            <input type="submit" class="button hide ezobject-relation-search-btn" name="CustomActionButton[{$attribute.id}_browse_objects]" value="{'Find objects'|i18n( 'design/standard/content/datatype' )}" />
         </div>
         <div class="break"></div>
         <div class="block inline-block ezobject-relation-search-browse hide"></div>
 
-        {include uri='design:content/datatype/edit/ezobjectrelation_ajax_search.tpl'}
+        {include uri='design:content/datatype/edit/owenhancedrelationlist_ajax_search.tpl'}
 	{/if}
     </div><!-- /div class="block" id="ezobjectrelationlist_browse_{$attribute.id}" -->
 {/if}
@@ -457,11 +455,8 @@
     $(document).ready(function() {
         var max_elements = {/literal}{$attribute.class_content.max_elements}{literal};
         
-        if (max_elements > 0) {
-            var attribute_id = '{/literal}{$attribute.id}{literal}';
-            if ($('#ezobjectrelationlist_browse_' + attribute_id).find('table tbody tr:visible').length == max_elements) {
-                $('#add_elements_relation_' + attribute_id).hide();
-            }
+        if (max_elements > 0 && $('#ezobjectrelationlist_browse_{/literal}{$attribute.id}{literal}').find('table tbody tr:visible').length == max_elements) {
+            $('#ezobjectrelationlist_browse_{/literal}{$attribute.id}{literal}').find('.left, .right').hide();
         }
     });
     {/literal}
