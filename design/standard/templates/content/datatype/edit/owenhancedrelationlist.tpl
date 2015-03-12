@@ -349,8 +349,8 @@
             {* Simple interface. *}
         {else}
             {def
-                    $minElements = $attribute.class_content.min_elements.value
-                    $maxElements = $attribute.class_content.max_elements.value
+                    $minElements = $attribute.class_content.min_elements
+                    $maxElements = $attribute.class_content.max_elements
                     $relationTextAction = 'Can'
                     $relationTextItem = 'item'
                     $relationTextNb = "%minItem%"
